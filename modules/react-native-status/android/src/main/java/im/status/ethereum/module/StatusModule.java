@@ -1481,5 +1481,22 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             }
         });
     }
+
+    @ReactMethod
+    public void changeDatabasePassword(final String keyUID, final String password, final String newPassword, final Callback callback) {
+        Log.d(TAG, "changeDatabasePassword");
+
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                String result = Statusgo.changeDatabasePassword(keyUID, password, newPassword);
+                callback.invoke(result);
+            }
+        };
+
+        StatusThreadPoolExecutor.getInstance().execute(r);
+    }
+
+
 }
 
