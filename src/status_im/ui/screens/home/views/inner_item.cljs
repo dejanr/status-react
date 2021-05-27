@@ -167,7 +167,7 @@
      (first @(re-frame/subscribe [:contacts/contact-two-names-by-identity chat-id])))])
 
 (defn home-list-item [home-item opts]
-  (let [{:keys [chat-id chat-name color group-chat public? timestamp last-message muted]} home-item]
+  (let [{:keys [chat-id chat-name color group-chat public? timestamp message last-message muted]} home-item]
     [react/touchable-opacity (merge {:style {:height 64}} opts)
      [:<>
       [chat-item-icon muted (and group-chat (not public?)) (and group-chat public?)]
@@ -186,5 +186,5 @@
        (memo-timestamp (if (pos? (:whisper-timestamp last-message))
                          (:whisper-timestamp last-message)
                          timestamp))]
-      [message-content-text (select-keys last-message [:content :content-type :community-id])]
+      [message-content-text (select-keys (or message last-message) [:content :content-type :community-id])]
       [unviewed-indicator home-item]]]))

@@ -6,6 +6,11 @@
 
 (defn rpc->type [{:keys [type name] :as chat}]
   (cond
+    (= 3 type) (assoc chat
+                      :chat-type constants/private-group-chat-type
+                      :chat-name name
+                      :public? false
+                      :group-chat true)
     (= 2 type) (assoc chat
                       :chat-type constants/private-group-chat-type
                       :chat-name name
