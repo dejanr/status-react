@@ -640,6 +640,12 @@
    (boolean (get multiaccount :waku-bloom-filter-mode))))
 
 (re-frame/reg-sub
+ :waku/v2-flag
+ :<- [:multiaccount]
+ (fn [multiaccount]
+   (boolean (get-in multiaccount [:wakuv2-config :Enabled]))))
+
+(re-frame/reg-sub
  :dapps-address
  :<- [:multiaccount]
  (fn [acc]
