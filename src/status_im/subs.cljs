@@ -1,5 +1,6 @@
 (ns status-im.subs
   (:require [cljs.spec.alpha :as spec]
+            [taoensso.timbre :as log]
             [clojure.string :as string]
             [re-frame.core :as re-frame]
             [status-im.browser.core :as browser]
@@ -451,7 +452,7 @@
  :disconnected?
  :<- [:peers-count]
  (fn [peers-count]
-   (zero? peers-count)))
+   false #_(zero? peers-count)))
 
 (re-frame/reg-sub
  :offline?
