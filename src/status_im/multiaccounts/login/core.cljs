@@ -257,10 +257,10 @@
   {:events [::get-node-config-callback]}
   [{:keys [db] :as cofx} node-config]
   (fx/merge cofx
-            {:db (assoc-in db [:multiaccount :wakuv2-config] 
+            {:db (assoc-in db [:multiaccount :wakuv2-config]
                            (get (types/json->clj node-config) :WakuV2Config))}))
 
-(fx/defn get-node-config 
+(fx/defn get-node-config
   [_]
   (status/get-node-config #(re-frame/dispatch [::get-node-config-callback %])))
 

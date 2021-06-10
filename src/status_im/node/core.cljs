@@ -72,10 +72,9 @@
 
 (defn get-waku-fleet [fleet-key]
   (let [fleets (:fleets (types/json->clj (js/require "./fleets.js")))
-        waku-fleet-key (if (string/includes? (name fleet-key) "prod") 
-                          :wakuv2.prod :wakuv2.test)]
+        waku-fleet-key (if (string/includes? (name fleet-key) "prod")
+                         :wakuv2.prod :wakuv2.test)]
     (get fleets waku-fleet-key)))
-
 
 (defn current-fleet-key [db]
   (keyword (get-in db [:multiaccount :fleet]
@@ -112,10 +111,10 @@
                              :TrustedMailServers
                              (if wakuv2-enabled [] (pick-nodes 6 (vals (:mail current-fleet))))
                              :StaticNodes
-                             (if wakuv2-enabled [] 
-                               (into (pick-nodes 2
-                                                 (vals (:whisper current-fleet)))
-                                     (vals (:static current-fleet))))
+                             (if wakuv2-enabled []
+                                 (into (pick-nodes 2
+                                                   (vals (:whisper current-fleet)))
+                                       (vals (:static current-fleet))))
                              :WakuNodes (vals (:waku current-fleet))
                              :WakuStoreNodes (vals (:waku current-fleet))
                              :RendezvousNodes    (if wakuv2-enabled [] rendezvous-nodes)})
@@ -148,8 +147,8 @@
              :StatusAccountsConfig {:Enabled true})
 
       (and
-        config/bootnodes-settings-enabled?
-        use-custom-bootnodes)
+       config/bootnodes-settings-enabled?
+       use-custom-bootnodes)
       (add-custom-bootnodes current-network custom-bootnodes)
 
       :always
