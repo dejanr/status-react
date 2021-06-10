@@ -3,7 +3,6 @@
             [status-im.ethereum.json-rpc :as json-rpc]
             [status-im.native-module.core :as status]
             [clojure.string :as string]
-            [taoensso.timbre :as log]
             [status-im.utils.config :as config]
             [status-im.utils.fx :as fx]
             [status-im.utils.platform :as utils.platform]

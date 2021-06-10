@@ -452,6 +452,7 @@
  :disconnected?
  :<- [:peers-count]
  (fn [peers-count]
+   (log/info "peers_count" peers-count)
    false #_(zero? peers-count)))
 
 (re-frame/reg-sub
