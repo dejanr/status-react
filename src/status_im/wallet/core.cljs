@@ -381,7 +381,13 @@
 (fx/defn wallet-send-gas-price-success
   {:events [:wallet.send/update-gas-price-success]}
   [{db :db} price]
-  {:db (assoc-in db [:wallet/prepare-transaction :gasPrice] price)})
+  (if config/eip1559-enabled?
+    (let [{:keys [base-fee max-priority-fee]} price
+          max-priority-fee-bn (money/bignumber max-priority-fee)]
+      {:db (update db :wallet/prepare-transaction assoc
+                   :maxFeePerGas (money/to-hex (money/add max-priority-fee-bn base-fee))
+                   :maxPriorityFeePerGas max-priority-fee)})
+    {:db (assoc-in db [:wallet/prepare-transaction :gasPrice] price)}))
 
 (fx/defn set-max-amount
   {:events [:wallet.send/set-max-amount]}

@@ -2403,8 +2403,8 @@
 (re-frame/reg-sub
  :signing/fee
  :<- [:signing/tx]
- (fn [{:keys [gas gasPrice]}]
-   (signing.gas/calculate-max-fee gas gasPrice)))
+ (fn [{:keys [gas gasPrice tx-obj]}]
+   (signing.gas/calculate-max-fee gas (or (get tx-obj :maxFeePerGas) gasPrice))))
 
 (re-frame/reg-sub
  :signing/phrase
@@ -2477,12 +2477,13 @@
    [(re-frame/subscribe [:signing/tx])
     (re-frame/subscribe [:balance address])])
  (fn [[{:keys [amount token gas gasPrice approve? gas-error-message]} balance]]
-   (if (and amount token (not approve?))
-     (let [amount-bn (money/formatted->internal (money/bignumber amount) (:symbol token) (:decimals token))
-           amount-error (or (get-amount-error amount (:decimals token))
-                            (get-sufficient-funds-error balance (:symbol token) amount-bn))]
-       (merge amount-error (get-sufficient-gas-error gas-error-message balance (:symbol token) amount-bn gas gasPrice)))
-     (get-sufficient-gas-error gas-error-message balance nil nil gas gasPrice))))
+   (when-not config/eip1559-enabled?
+     (if (and amount token (not approve?))
+       (let [amount-bn (money/formatted->internal (money/bignumber amount) (:symbol token) (:decimals token))
+             amount-error (or (get-amount-error amount (:decimals token))
+                              (get-sufficient-funds-error balance (:symbol token) amount-bn))]
+         (merge amount-error (get-sufficient-gas-error gas-error-message balance (:symbol token) amount-bn gas gasPrice)))
+       (get-sufficient-gas-error gas-error-message balance nil nil gas gasPrice)))))
 
 (re-frame/reg-sub
  :wallet.send/prepare-transaction-with-balance

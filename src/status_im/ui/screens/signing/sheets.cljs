@@ -60,3 +60,76 @@
         :on-press  #(re-frame/dispatch [:signing.edit-fee.ui/submit])
         :disabled  (or (:error gas-edit) (:error gas-price-edit))}
        (i18n/label :t/update)]]]))
+
+(views/defview fee-bottom-sheet-eip1559 [fee-display-symbol]
+  (views/letsubs [{gas-edit :gas
+                   max-fee-per-gas-edit :maxFeePerGas
+                   max-priority-fee-per-gas-edit :maxPriorityFeePerGas
+                   max-fee :max-fee} [:signing/edit-fee]]
+    [react/view
+     [react/view {:style {:margin-horizontal 16 :margin-top 8}}
+      [react/text {:style {:typography :title-bold}} (i18n/label :t/network-fee)]
+      [react/view {:style {:flex-direction :row
+                           :margin-top     8
+                           :align-items    :flex-end}}
+       [react/view {:flex 1}
+        [quo/text-input
+         {:on-change-text  #(re-frame/dispatch [:signing.edit-fee.ui/edit-value :gas %])
+          :label           (i18n/label :t/gas-limit)
+          :bottom-value    0
+          :error           (:error gas-edit)
+          :default-value   (:value gas-edit)
+          :keyboard-type   :numeric
+          :auto-capitalize :none
+          :placeholder     "0"
+          :show-cancel     false
+          :auto-focus      false}]]
+       [react/view {:flex         1
+                    :padding-left 16}
+        [quo/text-input
+         {:label           (i18n/label :t/max-fee)
+          :on-change-text  #(re-frame/dispatch [:signing.edit-fee.ui/edit-value :maxFeePerGas %])
+          :bottom-value    0
+          :error           (:error max-fee-per-gas-edit)
+          :default-value   (:value max-fee-per-gas-edit)
+          :keyboard-type   :numeric
+          :auto-capitalize :none
+          :placeholder     "0.000"
+          :show-cancel     false
+          :auto-focus      false}]]
+       [react/view {:flex         1
+                    :padding-left 16}
+        [quo/text-input
+         {:label           (i18n/label :t/max-priority-fee)
+          :on-change-text  #(re-frame/dispatch [:signing.edit-fee.ui/edit-value :maxPriorityFeePerGas %])
+          :bottom-value    0
+          :error           (:error max-priority-fee-per-gas-edit)
+          :default-value   (:value max-priority-fee-per-gas-edit)
+          :keyboard-type   :numeric
+          :auto-capitalize :none
+          :placeholder     "0.000"
+          :show-cancel     false
+          :auto-focus      false}]]
+       [react/view {:padding-left   8
+                    :padding-bottom 12}
+        [react/text (i18n/label :t/gwei)]]]
+
+      [react/view {:margin-vertical 16 :align-items :center}
+       [react/text {:style {:color colors/gray}} (i18n/label :t/wallet-transaction-total-fee)]
+       [react/view {:height 8}]
+       [react/nested-text {:style {:font-size 17}}
+        max-fee " "
+        [{:style {:color colors/gray}} fee-display-symbol]]]]
+     [react/view {:height 1 :background-color colors/gray-lighter}]
+     [react/view {:margin-horizontal 16 :align-items :center :justify-content :space-between :flex-direction :row :margin-top 6}
+      [quo/button
+       {:type     :secondary
+        :on-press #(re-frame/dispatch [:bottom-sheet/hide])}
+       (i18n/label :t/cancel)]
+      [quo/button
+       {:type      :secondary
+        :on-press  #(re-frame/dispatch [:signing.edit-fee.ui/submit])
+        :disabled  (or (:error gas-edit)
+                       (:error max-fee-per-gas-edit)
+                       (:error max-priority-fee-per-gas-edit))}
+       (i18n/label :t/update)]]]))

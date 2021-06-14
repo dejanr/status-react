@@ -4,7 +4,8 @@
             [status-im.i18n.i18n :as i18n]
             [status-im.bottom-sheet.core :as bottom-sheet]
             [status-im.utils.fx :as fx]
-            [status-im.utils.money :as money]))
+            [status-im.utils.money :as money]
+            [status-im.utils.config :as config]))
 
 (def min-gas-price-wei ^js (money/bignumber 1))
 
@@ -93,10 +94,15 @@
 (fx/defn open-fee-sheet
   {:events [:signing.ui/open-fee-sheet]}
   [{{:signing/keys [tx] :as db} :db :as cofx} sheet-opts]
-  (let [{:keys [gas gasPrice]} tx
-        edit-fee (-> {}
-                     (build-edit :gas (money/to-fixed gas))
-                     (build-edit :gasPrice (money/to-fixed (money/wei-> :gwei gasPrice))))]
+  (let [{:keys [gas gasPrice maxFeePerGas maxPriorityFeePerGas]} tx
+        max-fee          (money/to-fixed (money/wei-> :gwei maxFeePerGas))
+        max-priority-fee (money/to-fixed (money/wei-> :gwei maxPriorityFeePerGas))
+        edit-fee         (reduce (partial apply build-edit)
+                                 {}
+                                 {:gas                  (money/to-fixed gas)
+                                  :gasPrice             (money/to-fixed (money/wei-> :gwei gasPrice))
+                                  :maxFeePerGas         max-fee
+                                  :maxPriorityFeePerGas max-priority-fee})]
     (fx/merge cofx
               {:db (assoc db :signing/edit-fee edit-fee)}
               (bottom-sheet/show-bottom-sheet {:view sheet-opts}))))
@@ -104,18 +110,57 @@
 (fx/defn submit-fee
   {:events [:signing.edit-fee.ui/submit]}
   [{{:signing/keys [edit-fee] :as db} :db :as cofx}]
-  (let [{:keys [gas gasPrice]} edit-fee]
+  (let [{:keys [gas gasPrice maxFeePerGas maxPriorityFeePerGas]} edit-fee]
     (fx/merge cofx
-              {:db (update db :signing/tx assoc :gas (:value-number gas) :gasPrice (:value-number gasPrice))}
+              {:db (update db :signing/tx assoc
+                           :gas (:value-number gas)
+                           :gasPrice (:value-number gasPrice)
+                           :maxFeePerGas (money/->wei :gwei (:value-number maxFeePerGas))
+                           :maxPriorityFeePerGas (money/->wei :gwei (:value-number maxPriorityFeePerGas)))}
               (bottom-sheet/hide-bottom-sheet))))
 
 (re-frame/reg-fx
  :signing/update-gas-price
- (fn [{:keys [success-event error-event]}]
-   (json-rpc/call
-    {:method     "eth_gasPrice"
-     :on-success #(re-frame/dispatch [success-event %])
-     :on-error #(re-frame/dispatch [error-event %])})))
+ (fn [{:keys [success-event error-event] :as params}]
+   (if config/eip1559-enabled?
+     (json-rpc/call
+      {:method     "eth_getBlockByNumber"
+       :params     ["latest" false]
+       :on-success #(re-frame/dispatch [::header-fetched
+                                        (assoc params :header %)])
+       :on-error   #(re-frame/dispatch [error-event %])})
+     (json-rpc/call
+      {:method     "eth_gasPrice"
+       :on-success #(re-frame/dispatch [success-event %])
+       :on-error #(re-frame/dispatch [error-event %])}))))
+
+(fx/defn header-fetched
+  {:events [::header-fetched]}
+  [_ {:keys [error-event] :as params}]
+  {::json-rpc/call
+   [{:method     "eth_maxPriorityFeePerGas"
+     :on-success #(re-frame/dispatch [::max-priority-fee-per-gas-fetched
+                                      (assoc params :max-priority-fee %)])
+     :on-error #(re-frame/dispatch [error-event %])}]})
+
+(def london-block-gas-limit (money/bignumber 30000000))
+
+(defn check-base-fee [{:keys [gasUsed baseFeePerGas]}]
+  {:base-fee baseFeePerGas
+   :spike?   (or (money/greater-than-or-equals
+                  (money/bignumber 0)
+                  (money/bignumber gasUsed))
+                 (money/greater-than-or-equals
+                  (money/bignumber gasUsed)
+                  (money/bignumber london-block-gas-limit)))})
+
+(fx/defn max-priority-fee-per-gas-fetched
+  {:events [::max-priority-fee-per-gas-fetched]}
+  [_ {:keys [success-event header max-priority-fee]}]
+  (let [{:keys [base-fee spike?]} (check-base-fee header)]
+    {:dispatch [success-event {:base-fee         base-fee
+                               :max-priority-fee max-priority-fee
+                               :spike?           spike?}]}))
 
 (re-frame/reg-fx
  :signing/update-estimated-gas

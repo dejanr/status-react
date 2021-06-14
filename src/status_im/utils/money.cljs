@@ -33,9 +33,13 @@
       (new BigNumber (normalize (str n)))
       (catch :default _ nil))))
 
+(defn greater-than-or-equals
+  [bn1 bn2]
+  (.greaterThanOrEqualTo bn1 bn2))
+
 (defn valid? [^js bn]
   (when bn
-    (.greaterThanOrEqualTo bn 0)))
+    (greater-than-or-equals bn 0)))
 
 (defn from-decimal [n]
   (when n
@@ -154,3 +158,6 @@
       (crypto->fiat (get-in prices [from to :price] ^js (bignumber 0)))
       (with-precision 2)
       str))
+
+(defn add [bn1 n2]
+  (.add bn1 n2))

@@ -25,6 +25,7 @@
             [status-im.ui.screens.keycard.pin.views :as pin.views]
             [status-im.ui.components.bottom-panel.views :as bottom-panel]
             [status-im.utils.utils :as utils]
+            [status-im.utils.config :as config]
             [reagent.core :as reagent]))
 
 (defn separator []
@@ -383,7 +384,10 @@
                         [react/text {:style {:color colors/gray}} (str " " (:code wallet-currency))]]))
         :on-press  #(re-frame/dispatch
                      [:signing.ui/open-fee-sheet
-                      {:content        (fn [] [sheets/fee-bottom-sheet fee-display-symbol])
+                      {:content        (fn []
+                                         (if config/eip1559-enabled?
+                                           [sheets/fee-bottom-sheet-eip1559 fee-display-symbol]
+                                           [sheets/fee-bottom-sheet fee-display-symbol]))
                        :content-height 270}])}])))
 
 (views/defview network-item []
