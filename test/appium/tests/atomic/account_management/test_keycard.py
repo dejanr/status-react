@@ -8,7 +8,6 @@ class TestCreateAccount(SingleDeviceTestCase):
 
     @marks.testrail_id(6645)
     @marks.critical
-    @marks.skip
     def test_restore_account_migrate_multiaccount_to_keycard(self):
         sign_in = SignInView(self.driver)
         seed = basic_user['passphrase']
@@ -413,7 +412,6 @@ class TestKeycardCreateMultiaccountMultipleDevice(MultipleDeviceTestCase):
 
     @marks.testrail_id(5689)
     @marks.critical
-    @marks.skip
     def test_keycard_create_login_resotore_unlock_same_seed(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])

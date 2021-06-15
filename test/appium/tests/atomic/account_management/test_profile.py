@@ -117,7 +117,6 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(5502)
     @marks.critical
-    @marks.skip
     def test_can_add_existing_ens(self):
         home = SignInView(self.driver).recover_access(ens_user['passphrase'])
         profile = home.profile_button.click()
@@ -285,7 +284,6 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
     @marks.critical
     @marks.testrail_id(5419)
     @marks.flaky
-    @marks.skip
     def test_logcat_backup_recovery_phrase(self):
         sign_in = SignInView(self.driver)
         home = sign_in.create_user()
@@ -391,7 +389,6 @@ class TestProfileSingleDevice(SingleDeviceTestCase):
 
     @marks.testrail_id(5738)
     @marks.high
-    @marks.skip
     def test_dapps_permissions(self):
         home = SignInView(self.driver).create_user()
         account_name = home.status_account_name
@@ -938,7 +935,6 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
 
     @marks.testrail_id(5762)
     @marks.high
-    @marks.skip
     def test_pair_devices_sync_one_to_one_contacts_nicknames_public_chat(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
@@ -1039,7 +1035,6 @@ class TestProfileMultipleDevice(MultipleDeviceTestCase):
 
     @marks.testrail_id(6226)
     @marks.critical
-    @marks.skip
     def test_ens_mentions_pn_and_nickname_in_public_and_1_1_chats(self):
         self.create_drivers(2)
         device_1, device_2 = self.drivers[0], self.drivers[1]

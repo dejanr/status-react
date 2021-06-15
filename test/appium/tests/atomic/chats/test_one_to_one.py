@@ -198,7 +198,6 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
     @marks.testrail_id(5782)
     @marks.critical
-    @marks.skip
     def test_install_pack_and_send_sticker(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
@@ -390,7 +389,6 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
 
     @marks.testrail_id(5373)
     @marks.high
-    @marks.skip
     def test_send_and_open_links_with_previews(self):
         self.create_drivers(2)
         device_1, device_2 = SignInView(self.drivers[0]), SignInView(self.drivers[1])
@@ -657,7 +655,6 @@ class TestMessagesOneToOneChatSingle(SingleDeviceTestCase):
 
     @marks.testrail_id(5403)
     @marks.critical
-    @marks.skip
     def test_start_chat_with_ens_mention_in_one_to_one(self):
         home = SignInView(self.driver).create_user()
 

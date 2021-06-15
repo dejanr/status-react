@@ -11,7 +11,6 @@ class TestWalletManagement(SingleDeviceTestCase):
 
     @marks.testrail_id(5335)
     @marks.high
-    @marks.skip
     def test_wallet_set_up(self):
         sign_in = SignInView(self.driver)
         sign_in.recover_access(transaction_senders['A']['passphrase'])
@@ -81,7 +80,6 @@ class TestWalletManagement(SingleDeviceTestCase):
 
     @marks.testrail_id(5346)
     @marks.high
-    @marks.skip
     def test_collectible_from_wallet(self):
         passphrase = wallet_users['F']['passphrase']
         home = SignInView(self.driver).recover_access(passphrase=passphrase)
@@ -181,7 +179,6 @@ class TestWalletManagement(SingleDeviceTestCase):
 
     @marks.testrail_id(6224)
     @marks.critical
-    @marks.skip
     def test_add_account_to_multiaccount_instance_generate_new(self):
         home = SignInView(self.driver).create_user()
         wallet = home.wallet_button.click()
@@ -209,7 +206,6 @@ class TestWalletManagement(SingleDeviceTestCase):
 
     @marks.testrail_id(6244)
     @marks.high
-    @marks.skip
     def test_add_and_delete_watch_only_account_to_multiaccount_instance(self):
         home = SignInView(self.driver).create_user()
         wallet = home.wallet_button.click()

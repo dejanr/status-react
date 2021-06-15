@@ -51,7 +51,6 @@ class TestBrowsing(SingleDeviceTestCase):
 
     @marks.testrail_id(6210)
     @marks.high
-    @marks.skip
     def test_open_blocked_secure_not_secure_inlalid_offline_urls(self):
         home = SignInView(self.driver).create_user()
         dapp = home.dapp_tab_button.click()
@@ -101,7 +100,6 @@ class TestBrowsing(SingleDeviceTestCase):
 
     @marks.testrail_id(5390)
     @marks.high
-    @marks.skip
     def test_delete_close_all_tabs(self):
         home_view = SignInView(self.driver).create_user()
         dapp_view = home_view.dapp_tab_button.click()
@@ -134,7 +132,6 @@ class TestBrowsing(SingleDeviceTestCase):
 
     @marks.testrail_id(6633)
     @marks.high
-    @marks.skip
     def test_browser_managing_bookmarks(self):
         home_view = SignInView(self.driver).create_user()
         dapp_view = home_view.dapp_tab_button.click()
