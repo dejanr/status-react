@@ -450,7 +450,7 @@ class TestMessagesOneToOneChatMultiple(MultipleDeviceTestCase):
         chat_2.element_by_translation_id("dont-ask").click()
         chat_1.element_by_translation_id("enable").wait_and_click()
         chat_1.element_by_translation_id("enable-all").wait_and_click()
-        chat_1.close_button.click()
+        chat_1.close_modal_view_from_chat_button.click()
         if not chat_1.get_preview_message_by_text(giphy_url).preview_image:
             self.errors.append("No preview is shown for %s" % giphy_url)
         for key in preview_urls:

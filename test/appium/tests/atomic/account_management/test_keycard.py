@@ -16,6 +16,7 @@ class TestCreateAccount(SingleDeviceTestCase):
         profile.logout()
 
         home.just_fyi("Checking keycard banner and starting migrate multiaccount to keycard")
+        sign_in.back_button.click()
         sign_in.multi_account_on_login_button.wait_for_visibility_of_element(30)
         sign_in.get_multiaccount_by_position(1).click()
         if not sign_in.get_keycard_banner.is_element_displayed():
