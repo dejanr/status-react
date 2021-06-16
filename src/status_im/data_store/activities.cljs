@@ -29,4 +29,5 @@
                                 :chatId      :chat-id})
       (assoc :color (rand-nth colors/chat-colors))
       (update :last-message #(when % (messages/<-rpc %)))
+      (update :message #(when % (messages/<-rpc %)))
       (dissoc :chatId)))
